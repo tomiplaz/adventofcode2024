@@ -11,10 +11,10 @@ console.log(result);
 
 function getEnabled(lines: string[]): string[] {
   const enabled: string[] = [];
+  let startsEnabled = true;
   for (let i = 0, l = lines.length; i < l; i++) {
     const splitByDont = lines[i].split("don't()");
-    // Starts with enabled
-    if (i === 0) {
+    if (startsEnabled) {
       enabled.push(splitByDont[0]);
       splitByDont.splice(0, 1);
     }
@@ -23,6 +23,9 @@ function getEnabled(lines: string[]): string[] {
       // Enabled is what's on the right
       splitByDo.splice(0, 1);
       enabled.push(...splitByDo);
+      if (j === k - 1) {
+        startsEnabled = splitByDo.length !== 0;
+      }
     }
   }
   return enabled;
