@@ -7,7 +7,8 @@ type Orientation = 'n' | 'e' | 's' | 'w';
 
 const lines = getLinesFromFile(INPUT_FILENAME);
 const start = getStart(lines);
-const result = getResult(lines, start);
+const occupied = getOccupiedPositions(lines, start);
+const result = occupied.length;
 
 console.log(result);
 
@@ -21,12 +22,14 @@ function getStart(lines: string[]): Position {
   throw new Error("start not found");
 }
 
-function getResult(lines: string[], [x, y]: Position): number {
-  let result = 0;
+function getOccupiedPositions(lines: string[], [x, y]: Position): Position[] {
+  const occupied: Position[] = [];
   let o: Orientation = 'n';
 
   do {
-    result++;
+    if (!occupied.find(([eX, eY]) => eX === x && eY === y)) {
+      occupied.push([x, y]);
+    }
     let [nextX, nextY] = getNextPosition([x, y], o);
     while (lines[nextX]?.[nextY] === '#') {
       o = getNextOrientation(o);
@@ -35,7 +38,7 @@ function getResult(lines: string[], [x, y]: Position): number {
     [x, y] = [nextX, nextY];
   } while (lines[x]?.[y] !== undefined);
 
-  return result;
+  return occupied;
 }
 
 function getNextPosition([x, y]: [number, number], o: Orientation): Position {
