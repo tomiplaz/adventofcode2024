@@ -1,4 +1,4 @@
-import { getRulesAndUpdates, Update, Rule, getUpdateRules, getResult, isUpdateValid } from "./common";
+import { getRulesAndUpdates, Update, Rule, getUpdateRules, getResult, isUpdateValid, isRuleValid } from "./common";
 
 type Pair = [Update, Rule[]];
 
@@ -21,6 +21,20 @@ function getInvalidUpdatesWithRules(updates: Update[], rules: Rule[]): Pair[] {
 }
 
 function getRectifiedUpdates(pairs: Pair[]): Update[] {
-  //
+  const rectified: Update[] = [];
+  for (let i = 0, l = pairs.length; i < l; i++) {
+    const [update, rules] = pairs[i];
+    do {
+      for (let j = 0, k = rules.length; j < k; j++) {
+        if (!isRuleValid(update, rules[j])) {
+          update.splice(update.indexOf(rules[j][0]), 1);
+          update.splice(update.indexOf(rules[j][1]), 0, rules[j][0]);
+          break;
+        }
+      }
+    } while (!isUpdateValid([update, rules]))
+    rectified.push(update);
+  }
+  return rectified;
 }
 

@@ -19,7 +19,11 @@ export function getUpdateRules(update: Update, rules: Rule[]): Rule[] {
 }
 
 export function isUpdateValid([update, rules]: Pair): boolean {
-  return rules.every(([a, b]) => update.indexOf(a) < update.indexOf(b));
+  return rules.every(rule => isRuleValid(update, rule));
+}
+
+export function isRuleValid(update: Update, [a, b]: Rule): boolean {
+  return update.indexOf(a) < update.indexOf(b);
 }
 
 export function getResult(updates: Update[]): number {
