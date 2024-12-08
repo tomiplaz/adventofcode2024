@@ -3,7 +3,6 @@ import { getLinesFromFile, getNumsFromStr } from "../utils";
 const INPUT_FILENAME = "7/input.txt";
 
 type Equation = [number, number[]];
-type Operator = '+' | '*';
 
 const lines = getLinesFromFile(INPUT_FILENAME);
 const equations = getEquations(lines);
@@ -20,12 +19,25 @@ function getEquations(lines: string[]): Equation[] {
 }
 
 function getTrueEquations(equations: Equation[]): Equation[] {
-  return equations.filter(([r, operands]) => {
-    const operators: Operator[] = Array
-      .from({ length: operands.length - 1 })
-      .map(_ => '+');
-    let tempR = 0;
+  return equations.filter(([result, operands]) => {
+    const [first, ...rest] = operands;
+    const numOperators = operands.length - 1;
+    for (let mask = 0, max = Math.pow(2, numOperators); mask < max; mask++) {
+      const binMask = getBinaryMask(mask, numOperators);
+      const testResult = rest.reduce((acc, v, i) => {
+        return binMask[i] === '1' ? acc * v : acc + v;
+      }, first);
+      if (testResult === result) {
+        return true;
+      }
+    }
+    return false;
   });
+}
+
+function getBinaryMask(mask: number, l: number): string {
+  const bin = mask.toString(2);
+  return Array.from({ length: l - bin.length }).map(_ => '0').join('') + bin;
 }
 
 function getResult(equations: Equation[]): number {
