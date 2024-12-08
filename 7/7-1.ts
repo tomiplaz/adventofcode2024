@@ -1,3 +1,4 @@
+import { warn } from "console";
 import { getLinesFromFile, getNumsFromStr } from "../utils";
 
 const INPUT_FILENAME = "7/input.txt";
@@ -24,10 +25,14 @@ function getTrueEquations(equations: Equation[]): Equation[] {
     const numOperators = operands.length - 1;
     for (let mask = 0, max = Math.pow(2, numOperators); mask < max; mask++) {
       const binMask = getBinaryMask(mask, numOperators);
-      const testResult = rest.reduce((acc, v, i) => {
-        return binMask[i] === '1' ? acc * v : acc + v;
-      }, first);
-      if (testResult === result) {
+      let acc = first;
+      for (let i = 0, l = rest.length; i < l; i++) {
+        acc = binMask[i] === '1' ? acc * rest[i] : acc + rest[i];
+        if (acc > result) {
+          break;
+        }
+      }
+      if (acc === result) {
         return true;
       }
     }
