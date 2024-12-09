@@ -18,3 +18,12 @@ export function getNumsFromStr(str: string): number[] {
   return str.match(/\d+/g)?.map(Number) ?? [];
 };
 
+export function findLastIndex<T>(arr: T[], test: (v: T) => boolean): number {
+  for (let i = arr.length - 1; i >= 0; i--) {
+    if (test(arr[i])) {
+      return i;
+    }
+  }
+  return -1;
+}
+
