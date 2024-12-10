@@ -1,25 +1,10 @@
-import { getLinesFromFile, findLastIndex } from "../utils";
+import { getDisk, getResult, Disk, Block } from "./common";
 
-const INPUT_FILENAME = "9/input.txt";
-
-type Block = number | undefined;
-type Disk = Block[];
-
-const lines = getLinesFromFile(INPUT_FILENAME);
-const map = getDiskMap(lines[0]);
-const disk = getDisk(map);
+const disk = getDisk();
 const compacted = getCompacted(disk);
 const result = getResult(compacted);
 
 console.log(result);
-
-function getDiskMap(s: string): number[] {
-  return s.match(/\d{1}/g)?.map(Number) ?? [];
-};
-
-function getDisk(map: number[]): Disk {
-  return map.flatMap((v, i) => Array.from({ length: v }).map(_ => i % 2 === 0 ? i / 2 : undefined));
-}
 
 function getCompacted(disk: Disk): Disk {
   const compacted = disk.slice();
@@ -28,7 +13,7 @@ function getCompacted(disk: Disk): Disk {
       if (compacted.slice(i).every(v => v === undefined)) {
         return compacted;
       }
-      const lastFileIndex = findLastIndex<Block>(compacted, v => v !== undefined);
+      const lastFileIndex = findLastFileIndex(compacted);
       compacted.splice(i, 1, compacted[lastFileIndex]);
       compacted.splice(lastFileIndex, 1, undefined);
     }
@@ -36,9 +21,12 @@ function getCompacted(disk: Disk): Disk {
   return compacted;
 }
 
-function getResult(disk: Disk): number {
-  return disk
-    .slice(0, disk.indexOf(undefined))
-    .reduce((acc, v, i) => acc! + v! * i, 0)!;
+function findLastFileIndex(disk: Disk): number {
+  for (let i = disk.length - 1; i >= 0; i--) {
+    if (disk[i] !== undefined) {
+      return i;
+    }
+  }
+  return -1;
 }
 
